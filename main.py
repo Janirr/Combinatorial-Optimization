@@ -1,5 +1,6 @@
 import sys
 import random
+import time
 
 
 def isSafe(matrix, v, path, pos):
@@ -10,6 +11,19 @@ def isSafe(matrix, v, path, pos):
             return False
     return True
 
+def readFile(file_name):
+    try:
+        f = open(file_name)
+    except OSError:
+        print("Could not open/read file:", file_name)
+        sys.exit()
+    n = int(f.readline())
+    tmp_tab = []
+    for i in range(n):
+        connection = list(map(int, f.readline().split(" ")))
+        tmp_tab.append(connection)
+    f.close()
+    return tmp_tab
 
 def DFSsolution(matrix):
     global minZ
@@ -33,7 +47,7 @@ def DFS(matrix, current_position, path, visited, z):
             path.append(0)
             if z < minZ and len(path) > n:
                 minZ = z
-                print(path, z)
+                # print(path, z)
             z -= matrix[0][path[-1]]
             path.pop()
     for v in range(len(matrix)):
@@ -46,20 +60,6 @@ def DFS(matrix, current_position, path, visited, z):
             z -= matrix[v][path[-1]]
             path.pop()
             z -= matrix[v][path[-1]]
-
-
-def readFile(file_name):
-    try:
-        f = open(file_name)
-    except OSError:
-        print("Could not open/read file:", file_name)
-        sys.exit()
-    n = int(f.readline())
-    tmp_tab = []
-    for i in range(n):
-        connection = list(map(int, f.readline().split(" ")))
-        tmp_tab.append(connection)
-    f.close()
 
 
 def randomGraph(n, max_value=1000):
@@ -109,7 +109,7 @@ def nearestneighbour(matrix):
         z += matrix[path[-1]][0]
         value_paths.append(matrix[path[-1]][0])
         path.append(0)
-        print("Nearest neighbour: ", path, z)
+        # print("Nearest neighbour: ", path, z)
 
 
 def lowestedge(matrix):
@@ -147,8 +147,8 @@ def lowestedge(matrix):
                     path.append(connection)
                     z += tmp[0][0]
         tmp.pop(0)
-    if len(path) == n:
-        print("Lowest edge:", path, z)
+    # if len(path) == n:
+    #     print("Lowest edge:", path, z)
 
 
 def format_matrix(matrix):
@@ -157,20 +157,22 @@ def format_matrix(matrix):
 
 
 if __name__ == "__main__":
-    # matrix = [[0, 61, 177, 188, 381, 104],
-    #           [61, 0, 177, 118, 338, 165],
-    #           [177, 177, 0, 294, 296, 165],
-    #           [188, 118, 294, 0, 368, 255],
-    #           [381, 338, 296, 368, 0, 440],
-    #           [104, 165, 165, 255, 440, 0]]
-    matrix = randomGraph(5, 100)
-    format_matrix(matrix)
-    print("----")
-    # readFile("test")
-    DFSsolution(matrix)
-    print("Dynamic solution")
-    print("------------------------")
-    nearestneighbour(matrix)
-    # print("Nearest neighbour algorithm")
-    print("------------------------")
-    lowestedge(matrix)
+    for i in range(20,300,20):
+        matrix = readFile("test")
+        # format_matrix(matrix)
+        # readFile("test")
+
+        # start = time.time()
+        # DFSsolution(matrix)
+        # end = time.time()
+        # print("DFS:", end - start)
+
+        start = time.time()
+        nearestneighbour(matrix)
+        end = time.time()
+        print("Nearest neighbour:", end - start)
+
+        start = time.time()
+        lowestedge(matrix)
+        end = time.time()
+        print("Lowest edge:", end - start)
