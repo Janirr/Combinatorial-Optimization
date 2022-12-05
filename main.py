@@ -1,3 +1,4 @@
+import itertools
 import sys
 import random
 import time
@@ -10,6 +11,7 @@ def isSafe(matrix, v, path, pos):
         if path[i] == v:
             return False
     return True
+
 
 def readFile(file_name):
     try:
@@ -24,6 +26,7 @@ def readFile(file_name):
         tmp_tab.append(connection)
     f.close()
     return tmp_tab
+
 
 def DFSsolution(matrix):
     global minZ
@@ -47,7 +50,7 @@ def DFS(matrix, current_position, path, visited, z):
             path.append(0)
             if z < minZ and len(path) > n:
                 minZ = z
-                # print(path, z)
+                print(path, z)
             z -= matrix[0][path[-1]]
             path.pop()
     for v in range(len(matrix)):
@@ -83,36 +86,38 @@ def randomGraph(n, max_value=1000):
     return graph
 
 
-def nearestneighbour(matrix):
+def nearestNeighbour(matrix):
     path = [0]
-    value_paths = []
+    valuePaths = []
     visited = [False] * (len(matrix))
     visited[0] = True
-    min_j = 0
-    min_value = 9999
+    minIndex = 0
+    minValue = 9999
     z = 0
     i = 0
     for _ in range(len(matrix) - 1):
         for j in range(len(matrix)):
-            if min_value > matrix[i][j] > 0 and not visited[j]:
-                min_j = j
-                min_value = matrix[i][j]
-        if min_j != 0:
-            path.append(min_j)
-            visited[min_j] = True
-            z += min_value
-            value_paths.append(min_value)
-            i = min_j
-        min_j = 0
-        min_value = 9999
-    if matrix[path[-1]][0] > 0 and len(path) == len(visited) and len(value_paths) + 1 == len(visited):
+            if minValue > matrix[i][j] > 0 and not visited[j]:
+                minIndex = j
+                minValue = matrix[i][j]
+        if minIndex != 0:
+            path.append(minIndex)
+            visited[minIndex] = True
+            z += minValue
+            valuePaths.append(minValue)
+            i = minIndex
+        minIndex = 0
+        minValue = 9999
+    if matrix[path[-1]][0] > 0 \
+            and len(path) == len(visited) \
+            and len(valuePaths) + 1 == len(visited):
         z += matrix[path[-1]][0]
-        value_paths.append(matrix[path[-1]][0])
+        valuePaths.append(matrix[path[-1]][0])
         path.append(0)
-        # print("Nearest neighbour: ", path, z)
+        print(path, z)
 
 
-def lowestedge(matrix):
+def lowestEdge(matrix):
     n = len(matrix)
     tmp = []
     path = []
@@ -147,32 +152,34 @@ def lowestedge(matrix):
                     path.append(connection)
                     z += tmp[0][0]
         tmp.pop(0)
-    # if len(path) == n:
-    #     print("Lowest edge:", path, z)
+    if len(path) == n:
+        print(path, z)
 
 
-def format_matrix(matrix):
-    for i in matrix:
-        print(i)
+def bruteForce(matrix):
+    n = len(matrix)
+    pid = [l for l in range(n)]
+    path = []
+    z = 99999999
+    for i in itertools.permutations(pid):
+        i = list(i)
+        s = 0
+        for j in range(1, len(i)):
+            s += matrix[i[j]][i[j - 1]]
+        s += matrix[i[j]][i[0]]
+        if s < z:
+            z = s
+            path = i
+    return path, z
 
 
 if __name__ == "__main__":
-    for i in range(20,300,20):
+    for i in range(1, 2, 1):
         matrix = readFile("test")
-        # format_matrix(matrix)
-        # readFile("test")
-
-        # start = time.time()
-        # DFSsolution(matrix)
-        # end = time.time()
-        # print("DFS:", end - start)
-
-        start = time.time()
-        nearestneighbour(matrix)
-        end = time.time()
-        print("Nearest neighbour:", end - start)
-
-        start = time.time()
-        lowestedge(matrix)
-        end = time.time()
-        print("Lowest edge:", end - start)
+        print("Brute force:", bruteForce(matrix))
+        print("--- DFS ---")
+        DFSsolution(matrix)
+        print("--- NNA ---")
+        nearestNeighbour(matrix)
+        print("--- LEA ---")
+        lowestEdge(matrix)
