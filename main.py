@@ -152,20 +152,27 @@ def lowestEdge(tab):
         print(path, z)
 
 
-def bruteForce(tab):
-    n = len(tab)
-    pid = [l for l in range(n)]
+def bruteForce(matrix):
+    # tab?
+    n = len(matrix)
+    # Exclude the last element - isomorphism
+    pid = list(range(n-1))
     path = []
     z = 9999
     for i in itertools.permutations(pid):
         i = list(i)
         s = 0
         for j in range(1, len(i)):
-            s += tab[i[j]][i[j - 1]]
-        s += tab[i[j]][i[0]]
+            s += matrix[i[j]][i[j - 1]]
+        # Add the distance between the last vertex of the permutation
+        # to the last vertex and the last vertex to the first vertex of the permutation
+        s += matrix[i[-1]][n-1] + matrix[n-1][i[0]]
         if s < z:
             z = s
             path = i
+
+    # Because we need to add the last vertex
+    path.append(n-1)
     return path, z
 
 
