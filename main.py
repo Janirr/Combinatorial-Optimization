@@ -84,77 +84,45 @@ def randomGraph(n, max_value=1000):
     return graph
 
 
-def nearestNeighbour(tab):
+def nearestNeighbour(matrix):
     path = [0]
-    valuePaths = []
-    visited = [False] * (len(tab))
+    value_paths = []
+    visited = [False] * (len(matrix))
     visited[0] = True
-    minIndex = 0
-    minValue = 9999
+    min_j = 0
+    min_value = float('inf')
     z = 0
     i = 0
-    for _ in range(len(tab) - 1):
-        for j in range(len(tab)):
-            if minValue > tab[i][j] > 0 and not visited[j]:
-                minIndex = j
-                minValue = tab[i][j]
-        if minIndex != 0:
-            path.append(minIndex)
-            visited[minIndex] = True
-            z += minValue
-            valuePaths.append(minValue)
-            i = minIndex
-        minIndex = 0
-        minValue = 9999
-    if tab[path[-1]][0] > 0 and len(path) == len(visited) and len(valuePaths) + 1 == len(visited):
-        z += tab[path[-1]][0]
-        valuePaths.append(tab[path[-1]][0])
+    n = len(matrix)
+    for _ in range(n - 1):
+        for j in range(n):
+            if min_value > matrix[i][j] > 0 and not visited[j]:
+                min_j = j
+                min_value = matrix[i][j]
+        if min_j != 0:
+            path.append(min_j)
+            visited[min_j] = True
+            z += min_value
+            value_paths.append(min_value)
+            i = min_j
+        min_j = 0
+        min_value = 9999
+    if matrix[path[-1]][0] > 0 and len(path) == len(visited) and len(value_paths) + 1 == len(visited):
+        z += matrix[path[-1]][0]
+        value_paths.append(matrix[path[-1]][0])
         path.append(0)
-        print(path, z)
+        return path, z
 
 
-def lowestEdge(tab):
+<<<<<<< HEAD
+def bruteForce(tab):
+    # tab?
     n = len(tab)
-    tmp = []
-    path = []
-    visited = [[False, False] for _ in range(n)]
-    z = 0
-    for i in range(n - 1):
-        for j in range(i + 1, n):
-            if tab[i][j] > 0:
-                block = [tab[i][j], i, j]
-                tmp.append(block)
-    tmp.sort()
-    for i in range(len(tmp)):
-        if visited[tmp[0][1]].count(True) < 2 and visited[tmp[0][2]].count(True) < 2:
-            if visited[tmp[0][1]].count(True) == 1 and visited[tmp[0][2]].count(True) == 1:
-                if len(path) == n - 1:
-                    connection = [tmp[0][1], tmp[0][2]]
-                    visited[tmp[0][1]][1] = True
-                    visited[tmp[0][2]][1] = True
-                    path.append(connection)
-                    z += tmp[0][0]
-            else:
-                if len(path) < n - 1:
-                    connection = [tmp[0][1], tmp[0][2]]
-                    if visited[tmp[0][1]][0]:
-                        visited[tmp[0][1]][1] = True
-                    else:
-                        visited[tmp[0][1]][0] = True
-                    if visited[tmp[0][2]][0]:
-                        visited[tmp[0][2]][1] = True
-                    else:
-                        visited[tmp[0][2]][0] = True
-                    path.append(connection)
-                    z += tmp[0][0]
-        tmp.pop(0)
-    if len(path) == n:
-        print(path, z)
-
-
+=======
 def bruteForce(matrix):
     # tab?
     n = len(matrix)
+>>>>>>> 5d3caff1daff66b4cb53243920fbb27550b0b2bd
     # Exclude the last element - isomorphism
     pid = list(range(n-1))
     path = []
@@ -163,16 +131,27 @@ def bruteForce(matrix):
         i = list(i)
         s = 0
         for j in range(1, len(i)):
+<<<<<<< HEAD
+            s += tab[i[j]][i[j - 1]]
+        # Add the distance between the last vertex of the permutation
+        # to the last vertex and the last vertex to the first vertex of the permutation
+        s += tab[i[-1]][n-1] + tab[n-1][i[0]]
+=======
             s += matrix[i[j]][i[j - 1]]
         # Add the distance between the last vertex of the permutation
         # to the last vertex and the last vertex to the first vertex of the permutation
         s += matrix[i[-1]][n-1] + matrix[n-1][i[0]]
+>>>>>>> 5d3caff1daff66b4cb53243920fbb27550b0b2bd
         if s < z:
             z = s
             path = i
 
     # Because we need to add the last vertex
     path.append(n-1)
+<<<<<<< HEAD
+    path.append(path[0])
+=======
+>>>>>>> 5d3caff1daff66b4cb53243920fbb27550b0b2bd
     return path, z
 
 
@@ -199,32 +178,27 @@ def crossover(arr1, arr2, tab):
 
 
 def geneticSolution(tab, maxPopulation=10, mutations=5, iterations=5):
-    solutions = []
+    population = []
     for i in range(iterations):
         if i == 0:
             for _ in range(maxPopulation):
                 path = random.sample(range(0, len(tab)), len(tab))
                 path.append(path[0])
                 solution = fitness(path, tab)
-                solutions.append(solution)
-        solutions.sort(reverse=True)
-        paths = solutions
+                population.append(solution)
+        population.sort()
+        paths = population
         for j in range(mutations):
-            solutions.append(crossover(paths[j], paths[j + 1], matrix))
-        solutions.sort()
-        solutions = solutions[:maxPopulation]
-    print(*solutions[0])
+            population.append(crossover(paths[j], paths[j + 1], matrix))
+        population = population[:maxPopulation]
+    return population[0]
 
 
 if __name__ == "__main__":
-    for _ in range(1, 2, 1):
-        matrix = readFile("test")
-        print("Brute force:", bruteForce(matrix))
-        print("--- DFS ---")
-        DeepFirstSearch(matrix)
-        print("--- NNA ---")
-        nearestNeighbour(matrix)
-        print("--- LEA ---")
-        lowestEdge(matrix)
-        print("--- GEN ---")
-        geneticSolution(matrix)
+    for i in range(5, 10, 1):
+        matrix = randomGraph(i)
+        # matrix = readFile("test")
+        print("i:",i)
+        print("-- Brute force --", *bruteForce(matrix))
+        print("-- Nearest neighbour --", *nearestNeighbour(matrix))
+        print("-- Genetic --",geneticSolution(matrix)[1],geneticSolution(matrix)[0])
